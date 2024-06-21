@@ -101,11 +101,56 @@ open class DecoratorNode: Node {
     return false
   }
 
-  override public final func getPreamble() -> String {
+  open func isInline() -> Bool {
+    return true
+  }
+
+  public final func getUnicodeScalar() -> String {
     guard let unicodeScalar = Unicode.Scalar(NSTextAttachment.character) else {
       return ""
     }
     return String(Character(unicodeScalar))
+  }
+
+  public func getPreambleNewline() -> String {
+    if self.isInline() {
+      return ""
+    }
+
+    guard let prevSibling = getPreviousSibling() else {
+      return ""
+    }
+
+    guard prevSibling is ElementNode || prevSibling is DecoratorNode else {
+      return "\n"
+    }
+
+    return ""
+  }
+
+  override public func getPreamble() -> String {
+    return getPreambleNewline() + getUnicodeScalar()
+  }
+
+  override public func getPostamble() -> String {
+    let nextSibling = getNextSibling()
+    if nextSibling == nil {
+      return ""
+    } else if isInline() {
+      if let nextSiblingAsElement = nextSibling as? ElementNode,
+        !nextSiblingAsElement.isInline()
+      {
+        return "\n"
+      } else if let nextSiblingAsDecorator = nextSibling as? DecoratorNode,
+        !nextSiblingAsDecorator.isInline()
+      {
+        return "\n"
+      } else {
+        return ""
+      }
+    } else {
+      return "\n"
+    }
   }
 
   override public func getAttributedStringAttributes(theme: Theme) -> [NSAttributedString.Key: Any] {

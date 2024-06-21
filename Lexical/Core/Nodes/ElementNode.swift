@@ -304,7 +304,7 @@ open class ElementNode: Node {
       return ""
     }
 
-    guard prevSibling is ElementNode else {
+    guard prevSibling is ElementNode || prevSibling is DecoratorNode else {
       // prev is not an element node. Treat it as inline (TODO: inline handling in decorators)
       // Since prev is inline but not an element node, and we're not inline, return a newline
       return "\n"
