@@ -61,7 +61,7 @@ public extension LexicalViewDelegate {
     self.textView.showsVerticalScrollIndicator = false
     self.textView.clipsToBounds = true
     self.textView.accessibilityTraits = .staticText
-    self.placeholderText = placeholderText
+    self._placeholderText = placeholderText
 
     guard let textStorage = textView.textStorage as? TextStorage else {
       fatalError()
@@ -254,11 +254,23 @@ public extension LexicalViewDelegate {
   }
 
   /// Configure the placeholder text shown by this Lexical view when there is no text.
-  ///
-  /// This needs a refactor. Currently the LexicalView supports setting the placeholder text as part of the initialiser, which
-  /// works correctly. However setting the placeholder text later through this property will not properly proxy it through to the
-  /// TextView. This is a bug and should be fixed.
-  public var placeholderText: LexicalPlaceholderText?
+  private var _placeholderText: LexicalPlaceholderText?
+  public var placeholderText: LexicalPlaceholderText? {
+    get {
+      _placeholderText
+    }
+
+    set {
+      _placeholderText = newValue
+      if let _placeholderText {
+        textView.setPlaceholderText(
+          _placeholderText.text,
+          textColor: _placeholderText.color,
+          font: _placeholderText.font
+        )
+      }
+    }
+  }
 
   /// Returns the current selected text range according to the underlying UITextView.
   ///
