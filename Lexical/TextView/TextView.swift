@@ -363,7 +363,8 @@ protocol LexicalTextViewDelegate: NSObjectProtocol {
       try editor.read {
         if canShowPlaceholder(isComposing: editor.isComposing()) {
           placeholderLabel.isHidden = false
-          layoutIfNeeded()
+          // layoutIfNeeded()
+          layoutSubviews()
         }
       }
     } catch {}
