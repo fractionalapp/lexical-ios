@@ -324,6 +324,11 @@ open class ElementNode: Node {
       if let nextSiblingAsElement = nextSibling as? ElementNode, !nextSiblingAsElement.isInline() {
         // we're inline but the next sibling is an element but is not inline
         return "\n"
+      } else if let nextSiblingAsDecorator = nextSibling as? DecoratorNode,
+        !nextSiblingAsDecorator.isInline()
+      {
+        // we're inline but the next sibling is a decorator but is not inline
+        return "\n"
       } else {
         // we're inline, next sibling is either a text node or inline
         return ""

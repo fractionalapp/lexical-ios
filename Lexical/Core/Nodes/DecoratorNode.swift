@@ -129,7 +129,7 @@ open class DecoratorNode: Node {
   }
 
   override public func getPreamble() -> String {
-    return getPreambleNewline() + getUnicodeScalar()
+    return getUnicodeScalar()
   }
 
   override public func getPostamble() -> String {
