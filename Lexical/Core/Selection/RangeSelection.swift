@@ -555,7 +555,9 @@ public class RangeSelection: BaseSelection {
     var siblings: [Node] = []
 
     let nextSiblings = anchorNode.getNextSiblings()
-    let topLevelElement = anchorNode.getTopLevelElementOrThrow()
+    guard let topLevelElement = anchorNode.getTopLevelElement() ?? (anchorNode as? ElementNode) else {
+      fatalError("Expected to find a top level element from anchor node \(anchorNode.key)")
+    }
 
     if let anchorNode = anchorNode as? TextNode {
       let textContent = anchorNode.getTextPart()
