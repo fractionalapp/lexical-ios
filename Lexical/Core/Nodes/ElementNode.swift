@@ -304,13 +304,13 @@ open class ElementNode: Node {
       return ""
     }
 
-    guard prevSibling is ElementNode else {
-      // prev is not an element node. Treat it as inline (TODO: inline handling in decorators)
-      // Since prev is inline but not an element node, and we're not inline, return a newline
+    guard prevSibling is ElementNode || prevSibling is DecoratorNode else {
+      // prev is not an element/decorator node. Treat it as inline
+      // Since prev is inline but not an element/decorator node, and we're not inline, return a newline
       return "\n"
     }
 
-    // note that if prev is an element node (inline or not), it'll handle the newline.
+    // note that if prev is an element/decorator node (inline or not), it'll handle the newline.
     return ""
   }
 
@@ -323,6 +323,11 @@ open class ElementNode: Node {
     } else if isInline() {
       if let nextSiblingAsElement = nextSibling as? ElementNode, !nextSiblingAsElement.isInline() {
         // we're inline but the next sibling is an element but is not inline
+        return "\n"
+      } else if let nextSiblingAsDecorator = nextSibling as? DecoratorNode,
+        !nextSiblingAsDecorator.isInline()
+      {
+        // we're inline but the next sibling is a decorator but is not inline
         return "\n"
       } else {
         // we're inline, next sibling is either a text node or inline
