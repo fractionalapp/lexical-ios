@@ -105,31 +105,11 @@ open class DecoratorNode: Node {
     return true
   }
 
-  public final func getUnicodeScalar() -> String {
+  override public func getPreamble() -> String {
     guard let unicodeScalar = Unicode.Scalar(NSTextAttachment.character) else {
       return ""
     }
     return String(Character(unicodeScalar))
-  }
-
-  public func getPreambleNewline() -> String {
-    if self.isInline() {
-      return ""
-    }
-
-    guard let prevSibling = getPreviousSibling() else {
-      return ""
-    }
-
-    guard prevSibling is ElementNode || prevSibling is DecoratorNode else {
-      return "\n"
-    }
-
-    return ""
-  }
-
-  override public func getPreamble() -> String {
-    return getUnicodeScalar()
   }
 
   override public func getPostamble() -> String {
