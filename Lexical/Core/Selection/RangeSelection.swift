@@ -545,7 +545,7 @@ public class RangeSelection: BaseSelection {
     var siblings: [Node] = []
 
     let nextSiblings = anchorNode.getNextSiblings()
-    guard let topLevelElement = try? anchorNode.getTopLevelElementOrThrow() else {
+    guard let topLevelElement = anchorNode.getTopLevelElement() ?? (anchorNode as? ElementNode) else {
       throw LexicalError.internal("Could not get top level element")
     }
 
@@ -583,6 +583,25 @@ public class RangeSelection: BaseSelection {
     var didReplaceOrMerge = false
 
     for node in nodes {
+
+      if let node = node as? DecoratorNode {
+        if node == firstNode && node.isTopLevel() {
+          if let unwrappedTarget = target as? ElementNode,
+             unwrappedTarget.isEmpty() &&
+             unwrappedTarget.canReplaceWith(replacement: node) &&
+             isRootNode(node: unwrappedTarget.getParent()) {
+            try target.replace(replaceWith: node)
+            target = node
+            didReplaceOrMerge = true
+            continue
+          }
+        }
+
+        if isTextNode(target) {
+          target = topLevelElement
+        }
+      }
+
       if let node = node as? ElementNode {
         if node == firstNode {
           if let unwrappedTarget = target as? ElementNode,
@@ -657,7 +676,7 @@ public class RangeSelection: BaseSelection {
             target = try target.insertAfter(nodeToInsert: node)
           }
         }
-      } else if !isElementNode(node: node) || isDecoratorNode(node) && (node as? DecoratorNode)?.isTopLevel() == true {
+      } else if isDecoratorNode(node) && (node as? DecoratorNode)?.isTopLevel() == true {
         target = try target.insertAfter(nodeToInsert: node)
       } else {
         target = try node.getParentOrThrow() // Re-try again with the target being the parent
