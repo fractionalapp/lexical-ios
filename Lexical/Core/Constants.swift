@@ -125,6 +125,7 @@ public struct CommandType: RawRepresentable, Hashable {
   public static let keyTab = CommandType(rawValue: "keyTab")
   public static let clearEditor = CommandType(rawValue: "clearEditor")
   public static let linkTapped = CommandType(rawValue: "linkTapped")
+  public static let entityTapped = CommandType(rawValue: "entityTapped")
   public static let truncationIndicatorTapped = CommandType(rawValue: "truncationIndicatorTapped")
   public static let readOnlyViewTapped = CommandType(rawValue: "readOnlyViewTapped")
   public static let indentContent = CommandType(rawValue: "indentContent")
