@@ -537,6 +537,10 @@ public class RangeSelection: BaseSelection {
       try removeText()
     }
 
+    if isRootNode(node: try anchor.getNode()) {
+      try removeText()
+    }
+
     let anchor = anchor
     let anchorOffset = anchor.offset
     let anchorNode = try anchor.getNode()
@@ -593,7 +597,6 @@ public class RangeSelection: BaseSelection {
     var didReplaceOrMerge = false
 
     for node in nodes {
-
       if let node = node as? DecoratorNode {
         if node == firstNode && node.isTopLevel() {
           if let unwrappedTarget = target as? ElementNode,
