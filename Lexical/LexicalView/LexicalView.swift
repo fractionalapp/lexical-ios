@@ -74,7 +74,7 @@ public extension LexicalViewDelegate {
 
     self.textView.lexicalDelegate = self
     if let placeholderText {
-      self.textView.setPlaceholderText(placeholderText.text, textColor: placeholderText.color, font: placeholderText.font)
+      self.textView.setPlaceholderText(placeholderText)
     }
 
     addSubview(self.textView)
@@ -263,11 +263,7 @@ public extension LexicalViewDelegate {
     set {
       _placeholderText = newValue
       if let _placeholderText {
-        textView.setPlaceholderText(
-          _placeholderText.text,
-          textColor: _placeholderText.color,
-          font: _placeholderText.font
-        )
+        textView.setPlaceholderText(_placeholderText)
       }
     }
   }

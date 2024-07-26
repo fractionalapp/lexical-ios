@@ -31,6 +31,8 @@ protocol LexicalTextViewDelegate: NSObjectProtocol {
   weak var lexicalDelegate: LexicalTextViewDelegate?
   private var placeholderLabel: UILabel
 
+  private var overrideLineHeight: CGFloat?
+
   private let useInputDelegateProxy: Bool
   private let inputDelegateProxy: InputDelegateProxy
 
@@ -75,6 +77,15 @@ protocol LexicalTextViewDelegate: NSObjectProtocol {
     delegate = textViewDelegate
     textContainerInset = UIEdgeInsets(top: 8.0, left: 5.0, bottom: 8.0, right: 5.0)
 
+    if let paragraphAttributes = editorConfig.theme.paragraph {
+      if let lineHeight = paragraphAttributes[.lineHeight] as? any BinaryInteger {
+        overrideLineHeight = CGFloat(lineHeight)
+      }
+      if let lineHeight = paragraphAttributes[.lineHeight] as? any BinaryFloatingPoint {
+        overrideLineHeight = CGFloat(lineHeight)
+      }
+    }
+
     setUpPlaceholderLabel()
     registerRichText(editor: editor)
   }
@@ -94,6 +105,9 @@ protocol LexicalTextViewDelegate: NSObjectProtocol {
 
     placeholderLabel.frame.origin = CGPoint(x: textContainer.lineFragmentPadding * 1.5 + textContainerInset.left, y: textContainerInset.top)
     placeholderLabel.sizeToFit()
+    if let overrideLineHeight {
+      placeholderLabel.frame.size.height = overrideLineHeight
+    }
   }
 
   override public var inputDelegate: UITextInputDelegate? {
@@ -338,11 +352,33 @@ protocol LexicalTextViewDelegate: NSObjectProtocol {
     editor.dispatchCommand(type: .clearEditor)
   }
 
-  func setPlaceholderText(_ text: String, textColor: UIColor, font: UIFont) {
-    placeholderLabel.text = text
-    placeholderLabel.textColor = textColor
-    placeholderLabel.font = font
-    self.font = font
+  func setPlaceholderText(_ placeholderText: LexicalPlaceholderText) {
+    let lineHeight = overrideLineHeight ?? placeholderText.font.lineHeight
+    let fontSize = placeholderText.font.pointSize
+
+    let paragraphStyle = NSMutableParagraphStyle()
+    paragraphStyle.minimumLineHeight = lineHeight
+    paragraphStyle.maximumLineHeight = lineHeight
+
+    placeholderLabel.attributedText = NSAttributedString(
+      string: placeholderText.text,
+      attributes: [
+        .font: placeholderText.font,
+        .foregroundColor: placeholderText.color,
+        .paragraphStyle: paragraphStyle,
+      ]
+    )
+
+    placeholderLabel.sizeToFit()
+    if let overrideLineHeight {
+      placeholderLabel.frame.size.height = overrideLineHeight
+    }
+
+    if frame.size.height < lineHeight {
+      frame.size.height = lineHeight
+    }
+
+    typingAttributes[.paragraphStyle] = paragraphStyle
 
     showPlaceholderText()
   }
@@ -353,6 +389,14 @@ protocol LexicalTextViewDelegate: NSObjectProtocol {
       try editor.read {
         guard let root = getRoot() else { return }
         shouldShow = root.getTextContentSize() == 0
+        if shouldShow {
+          for topLevelNode in root.getChildren() {
+            if isDecoratorNode(topLevelNode) {
+              shouldShow = false
+              break
+            }
+          }
+        }
       }
       if !shouldShow {
         hidePlaceholderLabel()
