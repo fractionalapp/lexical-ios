@@ -759,6 +759,11 @@ public class RangeSelection: BaseSelection {
         }
       }
     }
+
+    if let editor = getActiveEditor() {
+      editor.frontend?.showPlaceholderText()
+    }
+
     return true
   }
 

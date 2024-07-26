@@ -303,7 +303,13 @@ class TextViewTests: XCTestCase {
   func testShowPlaceholderTextWithPlaceholderLabel() {
     let view = LexicalView(editorConfig: EditorConfig(theme: Theme(), plugins: []), featureFlags: FeatureFlags())
     let textView = view.textView
-    textView.setPlaceholderText("Enter Text", textColor: .lightGray, font: .systemFont(ofSize: 8))
+    textView.setPlaceholderText(
+      LexicalPlaceholderText(
+        text: "Enter Text",
+        font: .systemFont(ofSize: 8),
+        color: .lightGray
+      )
+    )
 
     if let label = textView.subviews.first(where: { $0 is UILabel }) as? UILabel {
       XCTAssertTrue(!label.isHidden)
@@ -314,7 +320,13 @@ class TextViewTests: XCTestCase {
     let view = LexicalView(editorConfig: EditorConfig(theme: Theme(), plugins: []), featureFlags: FeatureFlags())
     let textView = view.textView
 
-    textView.setPlaceholderText("Enter Text", textColor: .lightGray, font: .systemFont(ofSize: 8))
+    textView.setPlaceholderText(
+      LexicalPlaceholderText(
+        text: "Enter Text",
+        font: .systemFont(ofSize: 8),
+        color: .lightGray
+      )
+    )
     textView.insertText("hello")
     textView.showPlaceholderText()
 
@@ -326,7 +338,13 @@ class TextViewTests: XCTestCase {
   func testShowPlaceholderLabelOnDeletion() throws {
     let view = LexicalView(editorConfig: EditorConfig(theme: Theme(), plugins: []), featureFlags: FeatureFlags())
     let textView = view.textView
-    textView.setPlaceholderText("Aa", textColor: .lightGray, font: .systemFont(ofSize: 8))
+    textView.setPlaceholderText(
+      LexicalPlaceholderText(
+        text: "Aa",
+        font: .systemFont(ofSize: 8),
+        color: .lightGray
+      )
+    )
 
     textView.insertText("H")
     textView.showPlaceholderText()
