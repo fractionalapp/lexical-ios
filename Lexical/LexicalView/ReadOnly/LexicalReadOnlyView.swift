@@ -67,20 +67,29 @@ import UIKit
       }
     }
 
+    var partialFraction: CGFloat = 0
     let indexOfCharacter = textKitContext.layoutManager.characterIndex(for: pointInTextContainer,
                                                                        in: textKitContext.textContainer,
-                                                                       fractionOfDistanceBetweenInsertionPoints: nil)
+                                                                       fractionOfDistanceBetweenInsertionPoints: &partialFraction)
+
+    if indexOfCharacter == textKitContext.textStorage.length - 1 && partialFraction == 1.0 {
+      textKitContext.editor.dispatchCommand(type: .readOnlyViewTapped, payload: nil)
+      return
+    }
+
     let attributes = textKitContext.textStorage.attributes(at: indexOfCharacter, effectiveRange: nil)
 
-    if let link = attributes[.link] {
-      if let link = link as? URL {
+    if let entity = attributes[.link] {
+      if let link = entity as? URL {
         textKitContext.editor.dispatchCommand(type: .linkTapped, payload: link)
         return
-      } else if let link = link as? String {
+      } else if let link = entity as? String {
         if let linkURL = URL(string: link) {
           textKitContext.editor.dispatchCommand(type: .linkTapped, payload: linkURL)
           return
         }
+      } else {
+        textKitContext.editor.dispatchCommand(type: .entityTapped, payload: entity)
       }
     }
 
