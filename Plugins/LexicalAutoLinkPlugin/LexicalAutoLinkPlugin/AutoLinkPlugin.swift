@@ -140,7 +140,7 @@ open class AutoLinkPlugin: Plugin {
       let predicate = NSPredicate(format: "SELF MATCHES %@", argumentArray: [urlMatcher])
       if predicate.evaluate(with: String(subString)) {
         var newURLString = String(subString)
-        if !newURLString.hasPrefix("https://") || !newURLString.hasPrefix("http://") {
+        if !(newURLString.hasPrefix("https://") || !newURLString.hasPrefix("http://")) {
           newURLString = "https://" + newURLString
         }
 
