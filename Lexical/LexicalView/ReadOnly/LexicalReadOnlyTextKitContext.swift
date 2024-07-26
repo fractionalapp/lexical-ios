@@ -135,9 +135,10 @@ internal class LexicalReadOnlySizeCache {
   }
 
   private func setTextContainerSize(forWidth width: CGFloat, maxHeight: CGFloat?) {
-    if sizeCache.requiredWidth == width && sizeCache.requiredHeight == maxHeight {
-      return
-    }
+    // need to disable this for initial sizing to work
+    // if sizeCache.requiredWidth == width && sizeCache.requiredHeight == maxHeight {
+    //   return
+    // }
 
     createAndPropagateSizeCache()
     sizeCache.requiredWidth = width
