@@ -62,11 +62,11 @@ public func performRangeSearch(searchRoot: Node, comparison: (Node) -> (RangeSea
 // the recursive helper function for the above
 func searchInNode<Payload: Equatable>(node: Node, comparison: (Node) -> (RangeSearchInclusionResult, Payload), cursor: inout Int, ranges: inout [RangePayloadPair<Payload>], parentMatch: Bool, parentPayload: Payload?) throws {
   let (currentMatch, currentPayload) = comparison(node)
-  let currentMatchResolved = switch currentMatch {
-  case .include: true
-  case .exclude: false
-  case .inherit: parentMatch
-  }
+  let currentMatchResolved = { switch currentMatch {
+  case .include: return true
+  case .exclude: return false
+  case .inherit: return parentMatch
+  }}()
   let currentPayloadResolved = (currentMatch == .inherit) ? parentPayload ?? currentPayload : currentPayload
 
   // handle preamble and text parts
